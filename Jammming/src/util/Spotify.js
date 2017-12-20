@@ -1,34 +1,31 @@
-const clientID= '0ada90ea5d5b4ccf87590e038ba5fcad';
-const redirectURI = 'http://JammmingWithRod.surge.sh';
+const clientId= '0ada90ea5d5b4ccf87590e038ba5fcad';
+const redirectUri = 'http://localhost:3000/';
 
 let accessToken;
 let expiresIn;
 
 const Spotify = {
   //check if it works
-  getAccessToken(){
-    // check if token is there
-    if(accessToken){
+
+  getAccessToken() {
+    if (accessToken) {
       return accessToken;
     }
-    //check url to see if token has just been obtained
-    let url = window.location.href;
-    let accessTokenInUrl = /access_token=([^&]*)/;
-    let expiresInUrl = /expires_in=([^&]*)/;
-    accessToken = url.match(accessTokenInUrl);
-    expiresIn = url.match(expiresInUrl);
-      if(accessToken){
-    window.setTimeout(() => accessToken = '', expiresIn * 1000);
-    window.history.pushState('Access Token', null, '/');
-    console.log('access token received');
-    return accessToken
-          }
-  else{
-      window.location.href = 'https://accounts.spotify.com/authorize?client_id=${clientID}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectURI}'
+    const accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
+    const expiresInMatch = window.location.href.match(/expires_in=([^&]*)/);
+    if (accessTokenMatch && expiresInMatch) {
+      accessToken = accessTokenMatch[1];
+      const expiresIn = Number(expiresInMatch[1]);
+      window.setTimeout(() => accessToken = '', expiresIn * 1000);
+      window.history.pushState('Access Token', null, '/'); // This clears the parameters, allowing us to grab a new access token when it expires.
+      return accessToken;
+    } else {
+      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+      window.location = accessUrl;
     }
   },
-  search(searchTerm){
-    return fetch('https://api.spotify.com/v1/search?type=track&q=${searchTerm}',
+  search(term){
+    return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`,
     {headers: this.headerFill()
     }).then(
       response => response.json()).then(jsonResponse =>{
@@ -59,7 +56,7 @@ const Spotify = {
         },
 //creates a new playlist in user account and returns a playlistID
   createPlaylist(userID, playlistName, playlistTracks){
-    return fetch('/v1/users/{user_id}/playlists',{
+    return fetch(`/v1/users/{user_id}/playlists`,{
       headers:this.headerFill(),
       method: 'POST',
       body: JSON.stringify({name: playlistName, public:false})
@@ -96,7 +93,5 @@ const Spotify = {
       });
     }
   }
-
-
 
 export default Spotify;
