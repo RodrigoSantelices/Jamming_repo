@@ -17,7 +17,7 @@ const Spotify = {
       accessToken = accessTokenMatch[1];
       const expiresIn = Number(expiresInMatch[1]);
       window.setTimeout(() => accessToken = '', expiresIn * 1000);
-      window.history.pushState('Access Token', null, '/'); // This clears the parameters, allowing us to grab a new access token when it expires.
+       //window.history.pushState('Access Token', null, '/'); This clears the parameters, allowing us to grab a new access token when it expires. Currently causes screen to reset
       return accessToken;
     } else {
       const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
@@ -26,8 +26,7 @@ const Spotify = {
   },
   search(term){
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`,
-    {headers: this.headerFill()
-    }).then(
+    {headers: this.headerFill()}).then(
       response => response.json()).then(jsonResponse =>{
         if(jsonResponse.tracks){
           return jsonResponse.tracks.items.map(function(track){
@@ -44,6 +43,7 @@ const Spotify = {
           }
       });
     },
+
 // writes the custom playlist in jammming to their spotify account
   savePlaylist(name, trackURIs){
     return fetch('https://api.spotify.com/v1/me',
@@ -51,33 +51,45 @@ const Spotify = {
         response => response.json()).then(
           jsonResponse => {
             let userID = jsonResponse.id;
-            return this.saveTracksToPlaylist(userID, name, trackURIs);
+            return this.createPlaylist(userID, name, trackURIs);
           });
         },
 //creates a new playlist in user account and returns a playlistID
-  createPlaylist(userID, playlistName, playlistTracks){
-    return fetch(`/v1/users/{user_id}/playlists`,{
-      headers:this.headerFill(),
-      method: 'POST',
-      body: JSON.stringify({name: playlistName, public:false})
-    }).then(response =>{
-      if(response.ok){
-        return response.json()
-      }
-      throw new Error('Request Failed');
-    },
-      networkError => console.log(networkError.message)).then(jsonResponse => {
-        console.log('Playlist Created');
-        let playlistID = jsonResponse.id;
-        return this.saveTracksToPlaylist(userID, playlistID, playlistTracks);
-      })},
+/*
+createPlaylist(userID, playlistName, playlistTracks){
+  return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`,{
+    headers:this.headerFill(),
+    method: 'POST',
+    body: JSON.stringify({name: playlistName})
+  }).then(response =>{
+    if(response.ok){
+      return response.json()
+    }
+    //throw new Error('Request Failed');
+  },
+    networkError => console.log(networkError.message)).then(jsonResponse => {
+      console.log('Playlist Created');
+      let playlistID = jsonResponse.id;
+      return this.saveTracksToPlaylist(userID, playlistID, playlistTracks);
+    })},
+*/
+createPlaylist(userID, playlistName, playlistTracks){
+  return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`,{
+    headers:this.headerFill(),
+    method: 'POST',
+    body: JSON.stringify({name: playlistName})
+  }).then(response => response.json()).then(jsonResponse => {
+      console.log('Playlist Created');
+      let playlistID = jsonResponse.id;
+      return this.saveTracksToPlaylist(userID, playlistID, playlistTracks);
+    })},
+
 
   headerFill() {
   let accessToken = this.getAccessToken();
-  return {Authorization: 'Bearer ${accessToken}'}},
-
-  saveTracksToPlaylist(userID, playlistID, playlistTracks){
-    return fetch('/v1/users/{user_id}/playlists/{playlist_id}/tracks',{
+  return {Authorization: `Bearer ${accessToken}`}},
+/*  saveTracksToPlaylist(userID, playlistID, playlistTracks){
+    return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`,{
       headers: this.headerFill(),
       method: 'POST',
       body: JSON.stringify(playlistTracks)
@@ -88,6 +100,18 @@ const Spotify = {
       throw new Error('Request Failed');
     },
       networkError => console.log(networkError.message)).then(jsonResponse => {
+        console.log('Tracks Saved');
+        return jsonResponse.snapshot_id;
+      });
+    }
+  }
+removed error catch below*/
+  saveTracksToPlaylist(userID, playlistID, playlistTracks){
+    return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`,{
+      headers: this.headerFill(),
+      method: 'POST',
+      body: JSON.stringify(playlistTracks)
+    }).then(response => response.json()).then(jsonResponse => {
         console.log('Tracks Saved');
         return jsonResponse.snapshot_id;
       });

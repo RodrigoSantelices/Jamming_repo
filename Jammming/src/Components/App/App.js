@@ -2,12 +2,12 @@ import React from 'react';
 
 import './App.css';
 
-import {SearchBar} from '../SearchBar/SearchBar';
-import {SearchResults} from '../SearchResults/SearchResults';
-import {Playlist} from '../Playlist/Playlist';
+import SearchBar from '../SearchBar/SearchBar';
+import SearchResults from '../SearchResults/SearchResults';
+import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify'
 
-export class App extends React.Component {
+class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {searchResults:[], playlistTracks:[], playlistName:''};
@@ -18,6 +18,13 @@ export class App extends React.Component {
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
 }
+/*addTrack(track) {
+  let tracks = this.state.playlistTracks;
+  if (tracks.find(savedTrack => savedTrack.id === track.id)) {
+    return;
+  }
+}
+*/
   addTrack(track){
     let id = track.id;
     let currentTracks = this.state.playlistTracks;
