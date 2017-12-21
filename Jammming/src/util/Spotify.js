@@ -54,25 +54,7 @@ const Spotify = {
             return this.createPlaylist(userID, name, trackURIs);
           });
         },
-//creates a new playlist in user account and returns a playlistID
-/*
-createPlaylist(userID, playlistName, playlistTracks){
-  return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`,{
-    headers:this.headerFill(),
-    method: 'POST',
-    body: JSON.stringify({name: playlistName})
-  }).then(response =>{
-    if(response.ok){
-      return response.json()
-    }
-    //throw new Error('Request Failed');
-  },
-    networkError => console.log(networkError.message)).then(jsonResponse => {
-      console.log('Playlist Created');
-      let playlistID = jsonResponse.id;
-      return this.saveTracksToPlaylist(userID, playlistID, playlistTracks);
-    })},
-*/
+
 createPlaylist(userID, playlistName, playlistTracks){
   return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`,{
     headers:this.headerFill(),
@@ -88,24 +70,7 @@ createPlaylist(userID, playlistName, playlistTracks){
   headerFill() {
   let accessToken = this.getAccessToken();
   return {Authorization: `Bearer ${accessToken}`}},
-/*  saveTracksToPlaylist(userID, playlistID, playlistTracks){
-    return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`,{
-      headers: this.headerFill(),
-      method: 'POST',
-      body: JSON.stringify(playlistTracks)
-    }).then(response =>{
-      if(response.ok){
-        return response.json()
-      }
-      throw new Error('Request Failed');
-    },
-      networkError => console.log(networkError.message)).then(jsonResponse => {
-        console.log('Tracks Saved');
-        return jsonResponse.snapshot_id;
-      });
-    }
-  }
-removed error catch below*/
+
   saveTracksToPlaylist(userID, playlistID, playlistTracks){
     return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`,{
       headers: this.headerFill(),
