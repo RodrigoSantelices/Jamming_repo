@@ -19,15 +19,12 @@ class App extends React.Component {
     this.search = this.search.bind(this);
 }
 
-  addTrack(track){
-    let id = track.id;
-    let currentTracks = this.state.playlistTracks;
-      let duplicate = currentTracks.filter(song => song.id === id);
-
-      if(duplicate.length === 0){
-        currentTracks.push(track);
-        this.setState({playlistTracks: currentTracks});
-      }
+addTrack(track) {
+  let tracks = this.state.playlistTracks;
+  if (!tracks.includes(track)) {
+    tracks.push(track);
+    this.setState({playlistTracks: tracks});
+  }
 }
   removeTrack(track){
     let id = track.id;

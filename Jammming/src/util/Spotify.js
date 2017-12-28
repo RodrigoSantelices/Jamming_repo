@@ -1,5 +1,5 @@
 const clientId= '0ada90ea5d5b4ccf87590e038ba5fcad';
-const redirectUri = 'http://localhost:3000/';
+const redirectUri = 'http://jamwithrod.surge.sh/';
 
 let accessToken;
 let expiresIn;
